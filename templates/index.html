@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQLify</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>  <!-- FontAwesome for icons -->
+    <script type="module" src="https://md-block.verou.me/md-block.js"></script>
+</head>
+<body>
+    <header>
+        <h1>SQLify</h1>
+        <button onclick="darkThemeFunction()" class="darkModeButton" id="toggleTheme">🌙</button>
+        <a href="{{ url_for('about') }}">
+            <img src="{{ url_for('static', filename='info_light.png') }}" 
+                 alt="SQLify Logo" 
+                 class="logo"
+                 data-light="{{ url_for('static', filename='info_light.png') }}"
+                 data-dark="{{ url_for('static', filename='info_dark.png') }}">
+        </a>
+        
+    </header>
+
+    <div class="chat-container">
+        <div id="chat-box" class="chat-box"></div>
+        <div class="chat-input-container">
+            <input type="text" id="user-input" placeholder="Type your message...">
+            <button class="sendButton" id="send-button">Send</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+.about-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.about-container h2 {
+    color: #007bff;
+}
+
+.back-button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.back-button:hover {
+    background: #0056b3;
+}
+
+/* Dark Mode Styles */
+.dark-mode {
+    background-color: #424769;
+    color: white;
+}
+
+.dark-mode .about-container {
+    background: #555b89;
+    color: white;
+}
+
+.dark-mode .about-container h2 {
+    color: #ffcc00;
+}
+
+.dark-mode .back-button {
+    background: #ffcc00;
+    color: black;
+}
+
+.dark-mode .back-button:hover {
+    background: #e6b800;
+}

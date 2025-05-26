@@ -1,0 +1,16 @@
+# flask app setting
+server:
+  debug: false
+  host: "127.0.0.1"
+  port: 5001
+
+groq: 
+  model: "llama3-8b-8192"
+
+ollama:
+  host: "0.0.0.0"
+  port: "11434"
+  embedding_model: "nomic-embed-text:latest"
+  request_timeout: 1000
+  temperature: 0.4
+  

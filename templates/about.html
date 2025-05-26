@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About SQLify</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <a href="{{ url_for('home') }}">
+            <img src="{{ url_for('static', filename='info_light.png') }}" 
+                 alt="SQLify Logo" 
+                 class="logo" 
+                 data-light="{{ url_for('static', filename='info_light.png') }}"
+                 data-dark="{{ url_for('static', filename='info_dark.png') }}">
+        </a>
+        <h1>About SQLify</h1>
+        <button onclick="darkThemeFunction()" class="darkModeButton" id="toggleTheme">🌙</button>
+    </header>
+
+    <div class="about-container">
+        <h2>About the Project</h2>
+        <p>SQLify is a project designed to simplify SQL queries using AI-powered natural language processing.</p>
+        
+        <h2>Creator</h2>
+        <p>This project is created by <strong>Akash Gaur</strong>, a Software Developer.</p>
+
+        <a href="{{ url_for('home') }}" class="back-button">Back to Home</a>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
