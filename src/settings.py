@@ -5,13 +5,14 @@ from sqlalchemy import inspect
 
 # Llama Index imports
 from llama_index.llms.groq import Groq
+from llama_index.llms.ollama import Ollama
 from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.core import Settings, SQLDatabase, VectorStoreIndex
 from llama_index.core.objects import SQLTableNodeMapping, ObjectIndex, SQLTableSchema
 from llama_index.core.retrievers import SQLRetriever
 
 # Project-specific imports
-from src.utility import load_config, create_sqldb_and_tables
+from src.utility import load_config, create_sqldb_and_tables, logger
 from src.prompt import CONTEXT
 
 # ============================ Load Environment Variables ================================
@@ -25,8 +26,8 @@ config = load_config()
 
 # ============================ Initialize LLM and Embedding Models =======================
 # Initialize the Groq LLM
-llm_model = config["groq"]["model"]
-llm = Groq(model=llm_model, api_key=api_key)
+# llm_model = config["groq"]["model"]
+# llm = Groq(model=llm_model, api_key=api_key)
 
 # Access the Ollama settings from the config.yaml
 ollama_config = config['ollama']
@@ -38,6 +39,13 @@ embedding_model = OllamaEmbedding(
     base_url=base_url,                            # Base URL for the embedding model
 )
 
+llm = Ollama(
+    base_url=base_url,                                   # Base URL for the LLM
+    model=ollama_config['model'],                       # Model name
+    temperature=ollama_config['temperature'],           # Temperature setting
+    request_timeout=ollama_config.get('request_timeout', 120.0), # Request timeout
+)
+
 # Set the LLM and embedding model in the global settings
 Settings.llm = llm
 Settings.embed_model = embedding_model
@@ -45,8 +53,8 @@ Settings.embed_model = embedding_model
 
 # ============================ Database Initialization ==================================
 # Define paths for data and database
-data_dir_path = f"{os.getcwd()}/resources/data"
-sqldb_path = f"{os.getcwd()}/resources/Database.db"
+data_dir_path = os.path.join(os.getcwd(), "resources", "data")
+sqldb_path = os.path.join(os.getcwd(), "resources", "Database.db")
 
 # Create the database and tables
 engine = create_sqldb_and_tables(dir_path=data_dir_path, db_path=sqldb_path)
@@ -54,7 +62,7 @@ engine = create_sqldb_and_tables(dir_path=data_dir_path, db_path=sqldb_path)
 # Inspect the database to get table names
 inspector = inspect(engine)
 tables = inspector.get_table_names()
-print(f"Tables Present in db: {tables}")
+logger.info(f"Tables successfully loaded into memory: {tables}")
 
 
 # ============================ SQL Database and Index Setup =============================

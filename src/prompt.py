@@ -36,7 +36,6 @@ Give only and only the SQL query, don't give any text with it.
 <|eot_id|>
 <|start_header_id|>assistant<|end_header_id|>"""
 )
-    print(prompt_str)
     return prompt_str
 
 
@@ -91,7 +90,6 @@ def final_response_prompt(query_str: str, sql_query: str, data) -> str:
             "Response:"
         )
 
-    print(prompt_str)
     return prompt_str
 
 

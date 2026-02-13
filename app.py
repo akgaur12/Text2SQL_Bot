@@ -6,6 +6,7 @@ from http import HTTPStatus
 
 from src.settings import config
 from src.run_api import run_text2sql_api
+from src.utility import logger
 
 
 class Text2SQLServer:
@@ -24,6 +25,7 @@ class Text2SQLServer:
         self.limiter = Limiter(
             get_remote_address,
             app=self.app,
+            storage_uri=self.server_config.get('storage_uri', 'memory://'),
             default_limits=["50 per minute"]  # Limit API usage
         )
 
@@ -40,7 +42,6 @@ class Text2SQLServer:
         self.app.add_url_rule(rule='/about', endpoint='about', view_func=self.about, methods=['GET'])
 
  
-
     def setup_global_configs(self):
         """Global configurations for security, cache, and response modifications"""
         
@@ -50,13 +51,6 @@ class Text2SQLServer:
             # response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
             response.headers["Pragma"] = "no-cache"
             response.headers["Expires"] = "0"
-
-            # Security headers
-            # response.headers["X-Frame-Options"] = "DENY"
-            # response.headers["X-Content-Type-Options"] = "nosniff"
-            # response.headers["Referrer-Policy"] = "no-referrer"
-            # response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'"
-
             return response
 
 
@@ -76,15 +70,18 @@ class Text2SQLServer:
             data = request.get_json()
 
             if not data or 'query' not in data:
+                logger.warning("Request missing 'query' parameter")
                 return jsonify({'error': 'Missing query parameter'}), HTTPStatus.BAD_REQUEST
 
             query = data['query']
+            logger.info(f"Received Text2SQL query: {query}")
             result = run_text2sql_api(query)
 
             return jsonify({'status':'success', 'result':result}), HTTPStatus.OK
 
         except Exception as e:
-            return jsonify({'status':'error', 'message': str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
+            logger.error(f"Unexpected error in text2sql_endpoint: {str(e)}", exc_info=True)
+            return jsonify({'status':'error', 'message': "An internal server error occurred."}), HTTPStatus.INTERNAL_SERVER_ERROR
 
 
     def health_check(self):
@@ -98,14 +95,17 @@ class Text2SQLServer:
         port = self.server_config.get('port', 5001)
         debug = self.server_config.get('debug', False)
 
-        print(f"Starting Text2SQL server on {host}:{port}")
+        logger.info(f"Starting Text2SQL server on {host}:{port}")
         self.app.run(host=host, port=port, debug=debug)
 
 
+# Create server instance for WSGI servers (like Gunicorn)
+server_instance = Text2SQLServer()
+app = server_instance.app
+
 if __name__ == '__main__':
-    # Create and run server instance
-    server = Text2SQLServer()
-    server.run()
+    # Run the server manually if executed as a script
+    server_instance.run()
 
 
 

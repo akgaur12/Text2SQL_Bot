@@ -1,8 +1,8 @@
-# flask app setting
 server:
   debug: false
   host: "127.0.0.1"
   port: 5001
+  storage_uri: "memory://" # Change to "redis://localhost:6379" for production
 
 groq: 
   model: "llama3-8b-8192"
@@ -10,6 +10,7 @@ groq:
 ollama:
   host: "0.0.0.0"
   port: "11434"
+  model: "gpt-oss:20b-cloud"
   embedding_model: "nomic-embed-text:latest"
   request_timeout: 1000
   temperature: 0.4

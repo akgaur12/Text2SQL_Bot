@@ -1,7 +1,25 @@
 import os
 import yaml
+import logging
 import pandas as pd
 from sqlalchemy import create_engine, inspect
+
+# ============================ Logging Configuration ============================
+def get_logger(name=__name__):
+    """
+    Configure and return a standard logger.
+    """
+    logger = logging.getLogger(name)
+    if not logger.handlers:
+        logger.setLevel(logging.INFO)
+        handler = logging.StreamHandler()
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+    return logger
+
+logger = get_logger("Text2SQL")
+
 
 # ============================ Configuration Loader ============================
 def load_config():
@@ -33,12 +51,12 @@ def create_sqldb_and_tables(dir_path: str, db_path: str):
 
     # Create a SQLAlchemy engine
     engine = create_engine(f"sqlite:///{db_path}")
-    print(f"Successfully connected to the SQL database: {engine}")
+    logger.info(f"Successfully connected to the SQL database: {engine}")
 
     # Inspect existing tables in the database
     inspector = inspect(engine)
     existing_tables = inspector.get_table_names()
-    print("Tables before table creation:", existing_tables)
+    logger.info(f"Tables present in database: {existing_tables}")
 
     # Iterate through CSV files and create tables
     for file in csv_files:
@@ -49,8 +67,8 @@ def create_sqldb_and_tables(dir_path: str, db_path: str):
         if table_name not in existing_tables:
             # Create a new table and populate it with data
             df.to_sql(table_name, engine, index=False)
-            print(f"Table '{table_name}' has been created and data has been added.")
+            logger.info(f"Table '{table_name}' has been created and data has been added.")
         else:
-            print(f"Table '{table_name}' already exists in the database.")
+            logger.info(f"Table '{table_name}' already exists in the database.")
 
     return engine

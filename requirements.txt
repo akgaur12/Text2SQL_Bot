@@ -24,3 +24,4 @@ SQLAlchemy
 
 # Miscellaneous
 pyvis
+gunicorn
