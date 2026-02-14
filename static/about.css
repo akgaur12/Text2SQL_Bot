@@ -1,51 +1,57 @@
 .about-container {
     max-width: 800px;
-    margin: 50px auto;
-    padding: 20px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    margin: 4rem auto;
+    padding: 2.5rem;
+    background: var(--chat-bg-light);
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     text-align: center;
+    animation: fadeIn 0.5s ease;
+}
+
+.dark-mode .about-container {
+    background: var(--chat-bg-dark);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .about-container h2 {
-    color: #007bff;
+    color: var(--primary-color);
+    margin: 2rem 0 1rem;
+    font-size: 1.8rem;
+}
+
+.dark-mode .about-container h2 {
+    color: var(--text-dark);
+}
+
+.about-container p {
+    line-height: 1.6;
+    color: var(--text-light);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+.dark-mode .about-container p {
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .back-button {
     display: inline-block;
-    margin-top: 20px;
-    padding: 10px 20px;
-    background: #007bff;
+    margin-top: 1rem;
+    padding: 0.8rem 2rem;
+    background: var(--primary-color);
     color: white;
     text-decoration: none;
-    border-radius: 5px;
+    border-radius: 1.5rem;
+    font-weight: 600;
+    transition: var(--transition);
 }
 
 .back-button:hover {
-    background: #0056b3;
+    background: var(--primary-hover);
+    transform: translateY(-2px);
 }
 
-/* Dark Mode Styles */
-.dark-mode {
-    background-color: #424769;
-    color: white;
-}
-
-.dark-mode .about-container {
-    background: #555b89;
-    color: white;
-}
-
-.dark-mode .about-container h2 {
-    color: #ffcc00;
-}
-
-.dark-mode .back-button {
-    background: #ffcc00;
-    color: black;
-}
-
-.dark-mode .back-button:hover {
-    background: #e6b800;
+.back-button:active {
+    transform: translateY(0);
 }

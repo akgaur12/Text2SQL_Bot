@@ -1,34 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About SQLify</title>
+    <title>About | SQLify</title>
+    <!-- Anti-flicker script -->
+    <script>
+        (function () {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.classList.add(theme + '-mode');
+        })();
+    </script>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='about.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <header>
-        <a href="{{ url_for('home') }}">
-            <img src="{{ url_for('static', filename='info_light.png') }}" 
-                 alt="SQLify Logo" 
-                 class="logo" 
-                 data-light="{{ url_for('static', filename='info_light.png') }}"
-                 data-dark="{{ url_for('static', filename='info_dark.png') }}">
-        </a>
-        <h1>About SQLify</h1>
-        <button onclick="darkThemeFunction()" class="darkModeButton" id="toggleTheme">🌙</button>
+        <div class="header-left">
+            <h1>SQLify</h1>
+        </div>
+        <div class="header-actions">
+            <button class="darkModeButton" id="toggleTheme" title="Toggle Theme">🌙</button>
+            <a href="{{ url_for('home') }}" title="Back to Chat">
+                <img src="{{ url_for('static', filename='info_light.png') }}" alt="Info" class="logo"
+                    data-light="{{ url_for('static', filename='info_light.png') }}"
+                    data-dark="{{ url_for('static', filename='info_dark.png') }}">
+            </a>
+        </div>
     </header>
 
     <div class="about-container">
         <h2>About the Project</h2>
-        <p>SQLify is a project designed to simplify SQL queries using AI-powered natural language processing.</p>
-        
-        <h2>Creator</h2>
-        <p>This project is created by <strong>Akash Gaur</strong>, a Software Developer.</p>
+        <p>SQLify is an intelligent platform that simplifies database interactions by converting natural language
+            queries into executable SQL commands using advanced AI.</p>
 
-        <a href="{{ url_for('home') }}" class="back-button">Back to Home</a>
+        <h2>Creator</h2>
+        <p>This project is developed by Akash Gaur to bridge the gap between users and data.</p>
+
+        <a href="{{ url_for('home') }}" class="back-button">Back to Chat</a>
     </div>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
+
 </html>

@@ -1,84 +1,127 @@
-document.addEventListener("DOMContentLoaded", function() {
-    var userInput = document.getElementById("user-input");
-    var sendButton = document.getElementById("send-button");
+document.addEventListener("DOMContentLoaded", function () {
+    const userInput = document.getElementById("user-input");
+    const sendButton = document.getElementById("send-button");
+    const toggleThemeBtn = document.getElementById("toggleTheme");
+
+    // Initialize Theme
+    const savedTheme = localStorage.getItem("theme") || "light";
+    document.documentElement.classList.add(savedTheme + "-mode");
+    updateThemeUI(savedTheme === "dark");
 
     if (sendButton) {
         sendButton.addEventListener("click", sendMessage);
-    } else {
-        console.error("send-button not found in the document.");
     }
 
     if (userInput) {
-        userInput.addEventListener("keydown", function(event) {
+        userInput.addEventListener("keydown", function (event) {
             if (event.key === "Enter" && !event.shiftKey) {
                 event.preventDefault();
                 sendMessage();
             }
         });
-    } else {
-        console.error("user-input not found in the document.");
+    }
+
+    if (toggleThemeBtn) {
+        toggleThemeBtn.addEventListener("click", toggleTheme);
     }
 });
 
-function sendMessage() {
-    var userInput = document.getElementById("user-input");
-    var chatBox = document.getElementById("chat-box");
-    var message = userInput.value.trim();
+async function sendMessage() {
+    const userInput = document.getElementById("user-input");
+    const sendButton = document.getElementById("send-button");
+    const chatBox = document.getElementById("chat-box");
+    const message = userInput.value.trim();
 
-    if (message === "") return;
+    if (message === "" || sendButton.classList.contains("loading")) return;
 
+    // UI State: Loading
     appendMessage("user", message);
     userInput.value = "";
+    setLoading(true);
 
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", "http://127.0.0.1:5001/run_api", true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            var data = JSON.parse(xhr.responseText);
-            appendMessage("bot", data.result.message, true); // Set markdown = true for bot responses
-        } else if (xhr.readyState === 4) {
-            appendMessage("bot", "Error connecting to chatbot server.");
+    try {
+        const response = await fetch("/run_api", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ query: message })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Server responded with ${response.status}`);
         }
-    };
-    
-    xhr.send(JSON.stringify({ query: message }));
+
+        const data = await response.json();
+        if (data.status === "success") {
+            appendMessage("bot", data.result.message, true);
+        } else {
+            throw new Error(data.message || "Unknown error");
+        }
+    } catch (error) {
+        console.error("Chat Error:", error);
+        appendMessage("bot", "Sorry, I encountered an error connecting to the server. Please try again later.");
+    } finally {
+        setLoading(false);
+    }
 }
 
 function appendMessage(sender, message, markdown = false) {
-    var chatBox = document.getElementById("chat-box");
-    var messageElement;
+    const chatBox = document.getElementById("chat-box");
+    let messageElement;
 
     if (markdown && sender === "bot") {
         messageElement = document.createElement("md-block");
-        messageElement.innerText = message; // md-block automatically renders Markdown
+        messageElement.textContent = message;
     } else {
         messageElement = document.createElement("div");
         messageElement.innerHTML = message.replace(/\n/g, "<br>");
     }
-    
+
     messageElement.classList.add("chat-message", sender === "user" ? "user-message" : "bot-message");
     chatBox.appendChild(messageElement);
-    chatBox.scrollTop = chatBox.scrollHeight;
+    chatBox.scrollTo({
+        top: chatBox.scrollHeight,
+        behavior: 'smooth'
+    });
 }
 
-function darkThemeFunction() {
-    var element = document.body;
-    element.classList.toggle("dark-mode");
+function setLoading(isLoading) {
+    const sendButton = document.getElementById("send-button");
+    const userInput = document.getElementById("user-input");
 
-    var button = document.getElementById("toggleTheme");
-    var logo = document.querySelector(".logo");
-
-    // Get light and dark logo paths from the data attributes
-    var lightLogo = logo.getAttribute("data-light");
-    var darkLogo = logo.getAttribute("data-dark");
-
-    if (element.classList.contains("dark-mode")) {
-        button.innerHTML = "☀️"; // Change to sun icon
-        logo.src = darkLogo; // Switch to dark mode logo
+    if (isLoading) {
+        sendButton.classList.add("loading");
+        sendButton.disabled = true;
+        userInput.disabled = true;
     } else {
-        button.innerHTML = "🌙"; // Change to moon icon
-        logo.src = lightLogo; // Switch to light mode logo
+        sendButton.classList.remove("loading");
+        sendButton.disabled = false;
+        userInput.disabled = false;
+        userInput.focus();
+    }
+}
+
+function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.classList.contains("dark-mode");
+    const newTheme = isDark ? "light" : "dark";
+
+    html.classList.remove("light-mode", "dark-mode");
+    html.classList.add(newTheme + "-mode");
+    localStorage.setItem("theme", newTheme);
+    updateThemeUI(!isDark);
+}
+
+function updateThemeUI(isDark) {
+    const button = document.getElementById("toggleTheme");
+    const logo = document.querySelector(".logo");
+
+    if (button) button.innerHTML = isDark ? "☀️" : "🌙";
+
+    if (logo) {
+        const lightLogo = logo.getAttribute("data-light");
+        const darkLogo = logo.getAttribute("data-dark");
+        logo.src = isDark ? darkLogo : lightLogo;
     }
 }
